@@ -1,0 +1,90 @@
+const CopyWebpackPlugin = require('copy-webpack-plugin')
+const { VueLoaderPlugin } = require('vue-loader')
+const VuetifyLoaderPlugin = require('vuetify-loader/lib/plugin')
+
+module.exports = {
+  mode: 'development',
+  target: 'web',
+  context: `${__dirname}/src`,
+  entry: {
+    background: './background',
+    'content-script': './content-script',
+    'content-script-iframe': './content-script-iframe',
+  },
+  output: {
+    path: `${__dirname}/app/`,
+    filename: '[name].js',
+    publicPath: './',
+  },
+  module: {
+    rules: [
+      {
+        test: /\.ts$/,
+        loader: 'ts-loader',
+        options: {
+          appendTsSuffixTo: [/\.vue$/],
+        },
+      },
+      {
+        test: /\.vue$/,
+        loader: 'vue-loader',
+      },
+      {
+        test: /\.s(c|a)ss$/,
+        use: [
+          'vue-style-loader',
+          {
+            loader: 'css-loader',
+            options: {
+              esModule: false,
+            },
+          },
+          'sass-loader',
+        ],
+      },
+      {
+        test: /\.(css|jpg|gif|png|woff|woff2|eot|ttf)$/,
+        loader: 'file-loader',
+        options: {
+          name: 'assets/[name].[ext]',
+        },
+      },
+      {
+        test: /\.svg$/,
+        loader: 'svg-inline-loader',
+      },
+    ],
+  },
+  plugins: [
+    new CopyWebpackPlugin({
+      patterns: [
+        'icon.png',
+        {
+          from: 'manifest.json',
+          transform: (content) => {
+            return Buffer.from(
+              JSON.stringify({
+                ...JSON.parse(content.toString()),
+                name: process.env.npm_package_productName,
+                description: process.env.npm_package_description,
+                version: process.env.npm_package_version,
+              })
+            )
+          },
+        },
+        'content-script.css',
+        'content-script-iframe.css',
+      ],
+    }),
+    new VueLoaderPlugin(),
+    new VuetifyLoaderPlugin(),
+  ],
+  resolve: {
+    extensions: ['.js', '.ts', '.vue'],
+    alias: {
+      '~~': `${__dirname}/`,
+      '~': `${__dirname}/src/`,
+      vue$: 'vue/dist/vue.esm.js',
+    },
+  },
+}

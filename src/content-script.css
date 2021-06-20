@@ -1,0 +1,20 @@
+.yltv-start-time {
+  display: inline-block;
+  margin-left: 4px;
+  color: var(--yt-spec-text-secondary);
+  font-size: var(--ytd-user-comment_-_font-size);
+  font-weight: var(--ytd-user-comment_-_font-weight);
+  line-height: var(--ytd-user-comment_-_line-height);
+  letter-spacing: var(--ytd-user-comment_-_letter-spacing);
+}
+
+.ytp-preview:not(.ytp-text-detail) .ytp-tooltip-text + .yltv-tooltip {
+  background: none;
+  position: relative;
+  top: 45px;
+  text-shadow: 0 0 4px rgb(0 0 0 / 75%);
+}
+
+.ytp-preview:not(.ytp-text-detail) .ytp-tooltip-text-no-title + .yltv-tooltip {
+  top: 33px;
+}
