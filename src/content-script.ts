@@ -1,4 +1,4 @@
-import { browser } from 'webextension-polyfill-ts'
+import browser from 'webextension-polyfill'
 import { semaphore } from '@fiahfy/semaphore'
 import { add, format, formatISO, parseISO } from 'date-fns'
 import { parseTime, querySelectorAsync } from './utils'

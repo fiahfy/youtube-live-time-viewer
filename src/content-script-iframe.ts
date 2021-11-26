@@ -1,4 +1,4 @@
-import { browser } from 'webextension-polyfill-ts'
+import browser from 'webextension-polyfill'
 import { add, format, parseISO } from 'date-fns'
 import { parseTime, querySelectorAsync } from './utils'
 
