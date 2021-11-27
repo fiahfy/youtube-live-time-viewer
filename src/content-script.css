@@ -1,3 +1,9 @@
+.yltv-current-time {
+  color: #ddd;
+  font-size: 109%;
+  margin: 0 4px;
+}
+
 .yltv-start-time {
   display: inline-block;
   margin-left: 4px;

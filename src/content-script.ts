@@ -4,13 +4,15 @@ import { add, format, formatISO, parseISO } from 'date-fns'
 import { parseTime, querySelectorAsync } from './utils'
 
 const ClassName = {
+  currentTime: 'yltv-current-time',
   startTime: 'yltv-start-time',
   tooltip: 'yltv-tooltip',
 }
 
 const s = semaphore()
 const isVideoUrl = () => new URL(location.href).pathname === '/watch'
-let observer: MutationObserver | undefined
+let seekingObserver: MutationObserver | undefined
+let currentTimeObserver: MutationObserver | undefined
 let startTime: Date | undefined
 let endTime: Date | undefined
 
@@ -42,7 +44,7 @@ const removeStartTime = async () => {
   label && label.remove()
 }
 
-const addStartTime = async () => {
+const showStartTime = async () => {
   if (!startTime) {
     return
   }
@@ -60,13 +62,54 @@ const addStartTime = async () => {
     label.classList.add(ClassName.startTime)
     wrapper.append(label)
   }
-  label.textContent = `(Started at ${format(startTime, 'PP, p')})`
+  label.textContent = `(${format(startTime, 'PPp')})`
+}
+
+const disconnectCurrentTime = () => {
+  currentTimeObserver?.disconnect()
+  const el = document.querySelector(`.${ClassName.currentTime}`)
+  el && el.remove()
+}
+
+const observeCurrentTime = () => {
+  const timeDisplay = document.querySelector(
+    '.html5-video-player .ytp-chrome-bottom>.ytp-chrome-controls>.ytp-left-controls>.ytp-time-display'
+  )
+  const currentTime = timeDisplay?.querySelector('.ytp-time-current')
+  if (!timeDisplay || !currentTime) {
+    return
+  }
+
+  currentTimeObserver = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
+      const [addedNode] = mutation.addedNodes
+      if (!addedNode) {
+        return
+      }
+      if (!startTime) {
+        return
+      }
+      const duration = parseTime(addedNode.textContent ?? '')
+      if (!duration) {
+        return
+      }
+      const time = add(startTime, duration)
+      let el = document.querySelector(`.${ClassName.currentTime}`)
+      if (!el) {
+        el = document.createElement('span')
+        el.classList.add(ClassName.currentTime)
+        timeDisplay.parentElement?.insertBefore(el, timeDisplay.nextSibling)
+      }
+      el.textContent = `(${format(time, 'pp')})`
+    })
+  })
+  currentTimeObserver.observe(currentTime, { childList: true })
 }
 
 const disconnectSeeking = () => {
-  observer?.disconnect()
-  const tooltip = document.querySelector(`.${ClassName.tooltip}`)
-  tooltip && tooltip.remove()
+  seekingObserver?.disconnect()
+  const el = document.querySelector(`.${ClassName.tooltip}`)
+  el && el.remove()
 }
 
 const observeSeeking = () => {
@@ -82,36 +125,38 @@ const observeSeeking = () => {
     return
   }
 
-  observer = new MutationObserver((mutations) => {
+  seekingObserver = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
-      const addedNodes = Array.from(mutation.addedNodes)
+      const [addedNode] = mutation.addedNodes
       if (
-        addedNodes.length &&
-        wrapper.parentElement?.classList.contains('ytp-preview') &&
-        startTime
+        addedNode &&
+        wrapper.parentElement?.classList.contains('ytp-preview')
       ) {
-        const duration = parseTime(addedNodes[0].textContent ?? '')
+        if (!startTime) {
+          return
+        }
+        const duration = parseTime(addedNode.textContent ?? '')
         if (!duration) {
           return
         }
         const target = endTime ? startTime : new Date()
         const time = add(target, duration)
-        let tooltip = document.querySelector(`.${ClassName.tooltip}`)
-        if (!tooltip) {
-          tooltip = document.createElement('span')
-          tooltip.classList.add(ClassName.tooltip)
-          wrapper.append(tooltip)
+        let el = document.querySelector(`.${ClassName.tooltip}`)
+        if (!el) {
+          el = document.createElement('span')
+          el.classList.add(ClassName.tooltip)
+          wrapper.append(el)
         }
-        tooltip.textContent = `(${format(time, 'pp')})`
+        el.textContent = `(${format(time, 'pp')})`
       }
-      const removedNodes = Array.from(mutation.removedNodes)
-      if (removedNodes.length) {
+      const [removedNode] = mutation.removedNodes
+      if (removedNode) {
         const tooltip = document.querySelector(`.${ClassName.tooltip}`)
         tooltip && tooltip.remove()
       }
     })
   })
-  observer.observe(tooltip, { childList: true })
+  seekingObserver.observe(tooltip, { childList: true })
 }
 
 const init = async () => {
@@ -122,6 +167,7 @@ const init = async () => {
   await s.acquire(async () => {
     await removeStartTime()
     disconnectSeeking()
+    disconnectCurrentTime()
 
     await fetchTimes()
 
@@ -134,8 +180,11 @@ const init = async () => {
       data: formatISO(startTime),
     })
 
-    await addStartTime()
+    await showStartTime()
     observeSeeking()
+    if (endTime) {
+      observeCurrentTime()
+    }
   })
 }
 
