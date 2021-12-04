@@ -24,3 +24,13 @@
 .ytp-preview:not(.ytp-text-detail) .ytp-tooltip-text-no-title + .yltv-tooltip {
   top: 33px;
 }
+
+ytd-video-primary-info-renderer > #container > #info {
+  white-space: nowrap;
+}
+
+ytd-video-primary-info-renderer > #container > #info > #info-text {
+  display: block;
+  max-height: initial;
+  overflow: initial;
+}
