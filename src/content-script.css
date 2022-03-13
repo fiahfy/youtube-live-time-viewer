@@ -14,23 +14,39 @@
   letter-spacing: var(--ytd-user-comment_-_letter-spacing);
 }
 
-.ytp-preview:not(.ytp-text-detail) .ytp-tooltip-text + .yltv-tooltip {
-  background: none;
-  position: relative;
-  top: 45px;
-  text-shadow: 0 0 4px rgb(0 0 0 / 75%);
+.ytp-tooltip:not(.ytp-preview) > .ytp-tooltip-text-wrapper {
+  display: flex;
 }
 
-.ytp-preview:not(.ytp-text-detail) .ytp-tooltip-text-no-title + .yltv-tooltip {
-  top: 33px;
-}
-
-ytd-video-primary-info-renderer > #container > #info {
-  white-space: nowrap;
+.ytp-tooltip > .ytp-tooltip-text-wrapper > .yltv-tooltip.ytp-tooltip-text {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  margin-left: -2px;
+  padding-left: 0;
 }
 
 ytd-video-primary-info-renderer > #container > #info > #info-text {
   display: block;
   max-height: initial;
-  overflow: initial;
+}
+
+ytd-video-primary-info-renderer
+  > #container
+  > #info
+  > #info-text
+  > #info-strings {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  width: 100%;
+}
+
+ytd-video-primary-info-renderer
+  > #container
+  > #info
+  > #info-text
+  > #info-strings
+  > yt-formatted-string::after {
+  content: '';
+  margin: 0;
 }

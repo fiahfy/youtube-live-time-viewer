@@ -1,4 +1,3 @@
-import browser from 'webextension-polyfill'
 import { semaphore } from '@fiahfy/semaphore'
 import { add, format, formatISO, parseISO } from 'date-fns'
 import { parseTime, querySelectorAsync } from './utils'
@@ -44,13 +43,13 @@ const removeStartTime = async () => {
   label && label.remove()
 }
 
-const showStartTime = async () => {
+const appendStartTime = async () => {
   if (!startTime) {
     return
   }
 
   const wrapper = await querySelectorAsync(
-    'ytd-video-primary-info-renderer > #container > #info > #info-text'
+    'ytd-video-primary-info-renderer > #container > #info > #info-text > #info-strings'
   )
   if (!wrapper) {
     return
@@ -120,18 +119,15 @@ const observeSeeking = () => {
     return
   }
 
-  const tooltip = wrapper.querySelector('.ytp-tooltip-text')
-  if (!tooltip) {
+  const sourceTooltip = wrapper.querySelector('.ytp-tooltip-text')
+  if (!sourceTooltip) {
     return
   }
 
   seekingObserver = new MutationObserver((mutations) => {
     mutations.forEach((mutation) => {
       const [addedNode] = mutation.addedNodes
-      if (
-        addedNode &&
-        wrapper.parentElement?.classList.contains('ytp-preview')
-      ) {
+      if (addedNode) {
         if (!startTime) {
           return
         }
@@ -145,6 +141,7 @@ const observeSeeking = () => {
         if (!el) {
           el = document.createElement('span')
           el.classList.add(ClassName.tooltip)
+          el.classList.add(...sourceTooltip.classList)
           wrapper.append(el)
         }
         el.textContent = `(${format(time, 'pp')})`
@@ -156,7 +153,7 @@ const observeSeeking = () => {
       }
     })
   })
-  seekingObserver.observe(tooltip, { childList: true })
+  seekingObserver.observe(sourceTooltip, { childList: true })
 }
 
 const init = async () => {
@@ -175,12 +172,12 @@ const init = async () => {
       return
     }
 
-    await browser.runtime.sendMessage({
-      id: 'sendStartTime',
+    await chrome.runtime.sendMessage({
+      type: 'set-start-time',
       data: formatISO(startTime),
     })
 
-    await showStartTime()
+    await appendStartTime()
     observeSeeking()
     if (endTime) {
       observeCurrentTime()
@@ -188,11 +185,12 @@ const init = async () => {
   })
 }
 
-browser.runtime.onMessage.addListener(async (message) => {
-  const { id } = message
-  switch (id) {
-    case 'urlChanged':
-      return await init()
+chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+  const { type } = message
+  switch (type) {
+    case 'url-changed':
+      init().then(() => sendResponse())
+      return true
   }
 })
 

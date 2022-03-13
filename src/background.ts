@@ -1,20 +1,17 @@
-import browser from 'webextension-polyfill'
-
-let startTime: string | undefined
-
-browser.tabs.onUpdated.addListener(async (tabId, changeInfo) => {
+chrome.tabs.onUpdated.addListener(async (tabId, changeInfo) => {
   if (changeInfo.url) {
-    browser.tabs.sendMessage(tabId, { id: 'urlChanged' })
+    await chrome.tabs.sendMessage(tabId, { type: 'url-changed' })
   }
 })
 
-browser.runtime.onMessage.addListener(async (message) => {
-  const { id, data } = message
-  switch (id) {
-    case 'sendStartTime':
-      startTime = data
-      return
-    case 'requestStartTime':
-      return startTime
+chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+  const { type, data } = message
+  switch (type) {
+    case 'set-start-time':
+      chrome.storage.local.set({ data }).then(() => sendResponse())
+      return true
+    case 'get-start-time':
+      chrome.storage.local.get(['data']).then((result) => sendResponse(result))
+      return true
   }
 })

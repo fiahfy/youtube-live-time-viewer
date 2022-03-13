@@ -1,4 +1,3 @@
-import browser from 'webextension-polyfill'
 import { add, format, parseISO } from 'date-fns'
 import { parseTime, querySelectorAsync } from './utils'
 
@@ -37,8 +36,9 @@ const updateItems = () => {
 }
 
 const init = async () => {
-  const data = await browser.runtime.sendMessage({
-    id: 'requestStartTime',
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data }: any = await chrome.runtime.sendMessage({
+    type: 'get-start-time',
   })
   if (!data) {
     return
@@ -70,14 +70,13 @@ const init = async () => {
     messageObserver.observe(el, { childList: true })
   }
 
-  await observeMessages()
-
   const el = await querySelectorAsync('#item-list.yt-live-chat-renderer')
   if (!el) {
     return
   }
 
   updateItems()
+  await observeMessages()
 
   const observer = new MutationObserver(async () => {
     updateItems()
@@ -85,14 +84,6 @@ const init = async () => {
   })
   observer.observe(el, { childList: true })
 }
-
-browser.runtime.onMessage.addListener(async (message) => {
-  const { id } = message
-  switch (id) {
-    case 'urlChanged':
-      return await init()
-  }
-})
 
 document.addEventListener('DOMContentLoaded', async () => {
   await init()
