@@ -34,11 +34,9 @@ ytd-video-primary-info-renderer
   > #container
   > #info
   > #info-text
-  > #info-strings {
-  overflow: hidden;
-  text-overflow: ellipsis;
+  > #info-strings
+  > yt-formatted-string {
   white-space: nowrap;
-  width: 100%;
 }
 
 ytd-video-primary-info-renderer
