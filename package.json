@@ -2,11 +2,6 @@
   "name": "youtube-live-time-viewer",
   "description": "Chrome Extension for Viewing Time on YouTube Live",
   "version": "0.0.5",
-  "author": {
-    "name": "fiahfy",
-    "email": "d.fiahfy@gmail.com",
-    "url": "https://fiahfy.github.io/"
-  },
   "dependencies": {
     "@fiahfy/semaphore": "^0.0.2",
     "date-fns": "^2.28.0"
@@ -26,17 +21,8 @@
     "webpack": "^5.72.0",
     "webpack-cli": "^4.9.2"
   },
-  "keywords": [
-    "chrome extension",
-    "webpack",
-    "youtube"
-  ],
   "private": true,
   "productName": "Time Viewer for YouTube Live",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/fiahfy/youtube-live-time-viewer"
-  },
   "scripts": {
     "build": "webpack",
     "dev": "concurrently npm:watch:*",
