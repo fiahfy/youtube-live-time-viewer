@@ -36,8 +36,7 @@ const updateItems = () => {
 }
 
 const init = async () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data }: any = await chrome.runtime.sendMessage({
+  const data = await chrome.runtime.sendMessage({
     type: 'get-start-time',
   })
   if (!data) {

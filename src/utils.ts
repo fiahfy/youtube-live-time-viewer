@@ -2,8 +2,8 @@ export const querySelectorAsync = (
   selector: string,
   interval = 100,
   timeout = 1000
-): Promise<Element | null> => {
-  return new Promise((resolve) => {
+) => {
+  return new Promise<Element | null>((resolve) => {
     const expireTime = Date.now() + timeout
     const timer = window.setInterval(() => {
       const e = document.querySelector(selector)
@@ -15,9 +15,7 @@ export const querySelectorAsync = (
   })
 }
 
-export const parseTime = (
-  str: string
-): { hours: number; minutes: number; seconds: number } | undefined => {
+export const parseTime = (str: string) => {
   const sign = str.charAt(0) === '-' ? -1 : 1
   const units = str
     .split(':')

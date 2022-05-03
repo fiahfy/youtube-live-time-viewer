@@ -11,7 +11,9 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
       chrome.storage.local.set({ data }).then(() => sendResponse())
       return true
     case 'get-start-time':
-      chrome.storage.local.get(['data']).then((result) => sendResponse(result))
+      chrome.storage.local
+        .get(['data'])
+        .then((result) => sendResponse(result.data))
       return true
   }
 })
