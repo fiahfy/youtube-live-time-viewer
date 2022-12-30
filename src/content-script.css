@@ -5,13 +5,7 @@
 }
 
 .yltv-start-time {
-  display: inline-block;
   margin-left: 4px;
-  color: var(--yt-spec-text-secondary);
-  font-size: var(--ytd-user-comment_-_font-size);
-  font-weight: var(--ytd-user-comment_-_font-weight);
-  line-height: var(--ytd-user-comment_-_line-height);
-  letter-spacing: var(--ytd-user-comment_-_letter-spacing);
 }
 
 .ytp-tooltip:not(.ytp-preview) > .ytp-tooltip-text-wrapper {
@@ -23,28 +17,4 @@
   border-bottom-left-radius: 0;
   margin-left: -2px;
   padding-left: 0;
-}
-
-ytd-video-primary-info-renderer > #container > #info > #info-text {
-  display: block;
-  max-height: initial;
-}
-
-ytd-video-primary-info-renderer
-  > #container
-  > #info
-  > #info-text
-  > #info-strings
-  > yt-formatted-string {
-  white-space: nowrap;
-}
-
-ytd-video-primary-info-renderer
-  > #container
-  > #info
-  > #info-text
-  > #info-strings
-  > yt-formatted-string::after {
-  content: '';
-  margin: 0;
 }

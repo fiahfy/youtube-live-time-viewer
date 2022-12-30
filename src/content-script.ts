@@ -32,13 +32,6 @@ const fetchTimes = async () => {
 }
 
 const removeStartTime = async () => {
-  const wrapper = await querySelectorAsync(
-    'ytd-video-primary-info-renderer > #container > #info > #info-text'
-  )
-  if (!wrapper) {
-    return
-  }
-
   const label = document.querySelector(`.${ClassName.startTime}`)
   label && label.remove()
 }
@@ -49,7 +42,7 @@ const appendStartTime = async () => {
   }
 
   const wrapper = await querySelectorAsync(
-    'ytd-video-primary-info-renderer > #container > #info > #info-text > #info-strings'
+    '#bottom-row > #description > #description-inner > #info-container > #info'
   )
   if (!wrapper) {
     return
@@ -57,8 +50,8 @@ const appendStartTime = async () => {
 
   let label = document.querySelector(`.${ClassName.startTime}`)
   if (!label) {
-    label = document.createElement('yt-formatted-string')
-    label.classList.add(ClassName.startTime)
+    label = document.createElement('span')
+    label.classList.add(ClassName.startTime, 'yt-formatted-string', 'bold')
     wrapper.append(label)
   }
   label.textContent = `(${format(startTime, 'PPp')})`

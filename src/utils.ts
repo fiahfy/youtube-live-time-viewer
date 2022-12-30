@@ -1,7 +1,7 @@
 export const querySelectorAsync = (
   selector: string,
   interval = 100,
-  timeout = 1000
+  timeout = 10000
 ) => {
   return new Promise<Element | null>((resolve) => {
     const expireTime = Date.now() + timeout
