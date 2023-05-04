@@ -1,5 +1,6 @@
 import { add, format, parseISO } from 'date-fns'
 import { parseTime, querySelectorAsync } from './utils'
+import './content-script-frame.css'
 
 let startTime: Date | undefined
 
@@ -84,6 +85,4 @@ const init = async () => {
   observer.observe(el, { childList: true })
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
-  await init()
-})
+init()

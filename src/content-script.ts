@@ -1,6 +1,7 @@
 import { semaphore } from '@fiahfy/semaphore'
 import { add, format, formatISO, parseISO } from 'date-fns'
 import { parseTime, querySelectorAsync } from './utils'
+import './content-script.css'
 
 const ClassName = {
   currentTime: 'yltv-current-time',
@@ -187,6 +188,4 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   }
 })
 
-document.addEventListener('DOMContentLoaded', async () => {
-  await init()
-})
+init()
