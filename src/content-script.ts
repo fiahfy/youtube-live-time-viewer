@@ -22,12 +22,12 @@ const fetchTimes = async () => {
   const doc = new DOMParser().parseFromString(text, 'text/html')
 
   const startDate = doc.querySelector<HTMLMetaElement>(
-    'meta[itemprop=startDate]'
+    'meta[itemprop=startDate]',
   )?.content
   startTime = startDate ? parseISO(startDate) : undefined
 
   const endDate = doc.querySelector<HTMLMetaElement>(
-    'meta[itemprop=endDate]'
+    'meta[itemprop=endDate]',
   )?.content
   endTime = endDate ? parseISO(endDate) : undefined
 }
@@ -43,7 +43,7 @@ const appendStartTime = async () => {
   }
 
   const wrapper = await querySelectorAsync(
-    '#bottom-row > #description > #description-inner > #info-container > #info'
+    '#bottom-row > #description > #description-inner > #info-container > #info',
   )
   if (!wrapper) {
     return
@@ -66,7 +66,7 @@ const disconnectCurrentTime = () => {
 
 const observeCurrentTime = () => {
   const timeDisplay = document.querySelector(
-    '.html5-video-player .ytp-chrome-bottom>.ytp-chrome-controls>.ytp-left-controls>.ytp-time-display'
+    '.html5-video-player .ytp-chrome-bottom>.ytp-chrome-controls>.ytp-left-controls>.ytp-time-display',
   )
   const currentTime = timeDisplay?.querySelector('.ytp-time-current')
   if (!timeDisplay || !currentTime) {
@@ -107,7 +107,7 @@ const disconnectSeeking = () => {
 
 const observeSeeking = () => {
   const wrapper = document.querySelector(
-    '.html5-video-player > div > .ytp-tooltip-text-wrapper'
+    '.html5-video-player > div > .ytp-tooltip-text-wrapper',
   )
   if (!wrapper) {
     return

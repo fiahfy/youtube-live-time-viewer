@@ -26,8 +26,8 @@ const updateItem = (node: HTMLElement) => {
 const updateItems = () => {
   const items = Array.from(
     document.querySelectorAll(
-      '#items.yt-live-chat-item-list-renderer>yt-live-chat-text-message-renderer'
-    )
+      '#items.yt-live-chat-item-list-renderer>yt-live-chat-text-message-renderer',
+    ),
   )
   for (const item of items) {
     if (item instanceof HTMLElement) {
@@ -51,7 +51,7 @@ const init = async () => {
     messageObserver?.disconnect()
 
     const el = await querySelectorAsync(
-      '#items.yt-live-chat-item-list-renderer'
+      '#items.yt-live-chat-item-list-renderer',
     )
     if (!el) {
       return

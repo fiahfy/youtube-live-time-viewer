@@ -1,6 +1,6 @@
 # Time Viewer for YouTube Live
 
-![badge](https://github.com/fiahfy/youtube-live-time-viewer/workflows/Web%20Extension/badge.svg)
+![badge](https://github.com/fiahfy/youtube-live-time-viewer/workflows/Create%20Release/badge.svg)
 
 > Chrome Extension for Viewing Time on YouTube Live.
 
