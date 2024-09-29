@@ -21,7 +21,7 @@ export const parseTime = (str: string) => {
     .split(':')
     .map(Number)
     .map((i) => sign * Math.abs(i))
-  const nan = units.some((u) => isNaN(u))
+  const nan = units.some((u) => Number.isNaN(u))
   if (nan) {
     return undefined
   }

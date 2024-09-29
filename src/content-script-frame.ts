@@ -58,14 +58,14 @@ const init = async () => {
     }
 
     messageObserver = new MutationObserver((mutations) => {
-      mutations.forEach((mutation) => {
+      for (const mutation of mutations) {
         const nodes = Array.from(mutation.addedNodes)
-        nodes.forEach((node: Node) => {
+        for (const node of nodes) {
           if (node instanceof HTMLElement) {
             updateItem(node)
           }
-        })
-      })
+        }
+      }
     })
     messageObserver.observe(el, { childList: true })
   }

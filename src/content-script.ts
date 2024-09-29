@@ -34,7 +34,7 @@ const fetchTimes = async () => {
 
 const removeStartTime = async () => {
   const label = document.querySelector(`.${ClassName.startTime}`)
-  label && label.remove()
+  label?.remove()
 }
 
 const appendStartTime = async () => {
@@ -61,7 +61,7 @@ const appendStartTime = async () => {
 const disconnectCurrentTime = () => {
   currentTimeObserver?.disconnect()
   const el = document.querySelector(`.${ClassName.currentTime}`)
-  el && el.remove()
+  el?.remove()
 }
 
 const observeCurrentTime = () => {
@@ -74,7 +74,7 @@ const observeCurrentTime = () => {
   }
 
   currentTimeObserver = new MutationObserver((mutations) => {
-    mutations.forEach((mutation) => {
+    for (const mutation of mutations) {
       const [addedNode] = mutation.addedNodes
       if (!addedNode) {
         return
@@ -94,7 +94,7 @@ const observeCurrentTime = () => {
         timeDisplay.parentElement?.insertBefore(el, timeDisplay.nextSibling)
       }
       el.textContent = `(${format(time, 'pp')})`
-    })
+    }
   })
   currentTimeObserver.observe(currentTime, { childList: true })
 }
@@ -102,7 +102,7 @@ const observeCurrentTime = () => {
 const disconnectSeeking = () => {
   seekingObserver?.disconnect()
   const el = document.querySelector(`.${ClassName.tooltip}`)
-  el && el.remove()
+  el?.remove()
 }
 
 const observeSeeking = () => {
@@ -119,7 +119,7 @@ const observeSeeking = () => {
   }
 
   seekingObserver = new MutationObserver((mutations) => {
-    mutations.forEach((mutation) => {
+    for (const mutation of mutations) {
       const [addedNode] = mutation.addedNodes
       if (addedNode) {
         if (!startTime) {
@@ -143,9 +143,9 @@ const observeSeeking = () => {
       const [removedNode] = mutation.removedNodes
       if (removedNode) {
         const tooltip = document.querySelector(`.${ClassName.tooltip}`)
-        tooltip && tooltip.remove()
+        tooltip?.remove()
       }
-    })
+    }
   })
   seekingObserver.observe(sourceTooltip, { childList: true })
 }
