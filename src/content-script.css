@@ -1,20 +1,10 @@
 .yltv-current-time {
-  color: #ddd;
   font-size: 109%;
-  margin: 0 4px;
 }
 
-.yltv-start-time {
-  margin-left: 4px;
-}
-
-.ytp-tooltip:not(.ytp-preview) > .ytp-tooltip-text-wrapper {
-  display: flex;
-}
-
-.ytp-tooltip > .ytp-tooltip-text-wrapper > .yltv-tooltip.ytp-tooltip-text {
-  border-top-left-radius: 0;
-  border-bottom-left-radius: 0;
-  margin-left: -2px;
-  padding-left: 0;
+.ytp-tooltip
+  > .ytp-tooltip-text-wrapper
+  > .ytp-tooltip-bottom-text
+  > .yltv-tooltip.ytp-tooltip-text {
+  margin-left: 5px;
 }

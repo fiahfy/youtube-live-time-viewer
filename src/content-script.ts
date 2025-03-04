@@ -1,6 +1,6 @@
 import { semaphore } from '@fiahfy/semaphore'
 import { add, format, formatISO, parseISO } from 'date-fns'
-import { parseTime, querySelectorAsync } from './utils'
+import { parseTime } from './utils'
 import './content-script.css'
 
 const ClassName = {
@@ -16,7 +16,7 @@ let currentTimeObserver: MutationObserver | undefined
 let startTime: Date | undefined
 let endTime: Date | undefined
 
-const fetchTimes = async () => {
+const loadTimes = async () => {
   const res = await fetch(location.href)
   const text = await res.text()
   const doc = new DOMParser().parseFromString(text, 'text/html')
@@ -32,73 +32,6 @@ const fetchTimes = async () => {
   endTime = endDate ? parseISO(endDate) : undefined
 }
 
-const removeStartTime = async () => {
-  const label = document.querySelector(`.${ClassName.startTime}`)
-  label?.remove()
-}
-
-const appendStartTime = async () => {
-  if (!startTime) {
-    return
-  }
-
-  const wrapper = await querySelectorAsync(
-    '#bottom-row > #description > #description-inner > #info-container > #info',
-  )
-  if (!wrapper) {
-    return
-  }
-
-  let label = document.querySelector(`.${ClassName.startTime}`)
-  if (!label) {
-    label = document.createElement('span')
-    label.classList.add(ClassName.startTime, 'yt-formatted-string', 'bold')
-    wrapper.append(label)
-  }
-  label.textContent = `(${format(startTime, 'PPp')})`
-}
-
-const disconnectCurrentTime = () => {
-  currentTimeObserver?.disconnect()
-  const el = document.querySelector(`.${ClassName.currentTime}`)
-  el?.remove()
-}
-
-const observeCurrentTime = () => {
-  const timeDisplay = document.querySelector(
-    '.html5-video-player .ytp-chrome-bottom>.ytp-chrome-controls>.ytp-left-controls>.ytp-time-display',
-  )
-  const currentTime = timeDisplay?.querySelector('.ytp-time-current')
-  if (!timeDisplay || !currentTime) {
-    return
-  }
-
-  currentTimeObserver = new MutationObserver((mutations) => {
-    for (const mutation of mutations) {
-      const [addedNode] = mutation.addedNodes
-      if (!addedNode) {
-        return
-      }
-      if (!startTime) {
-        return
-      }
-      const duration = parseTime(addedNode.textContent ?? '')
-      if (!duration) {
-        return
-      }
-      const time = add(startTime, duration)
-      let el = document.querySelector(`.${ClassName.currentTime}`)
-      if (!el) {
-        el = document.createElement('span')
-        el.classList.add(ClassName.currentTime)
-        timeDisplay.parentElement?.insertBefore(el, timeDisplay.nextSibling)
-      }
-      el.textContent = `(${format(time, 'pp')})`
-    }
-  })
-  currentTimeObserver.observe(currentTime, { childList: true })
-}
-
 const disconnectSeeking = () => {
   seekingObserver?.disconnect()
   const el = document.querySelector(`.${ClassName.tooltip}`)
@@ -107,7 +40,7 @@ const disconnectSeeking = () => {
 
 const observeSeeking = () => {
   const wrapper = document.querySelector(
-    '.html5-video-player > div > .ytp-tooltip-text-wrapper',
+    '.html5-video-player > div > .ytp-tooltip-text-wrapper > .ytp-tooltip-bottom-text',
   )
   if (!wrapper) {
     return
@@ -150,32 +83,93 @@ const observeSeeking = () => {
   seekingObserver.observe(sourceTooltip, { childList: true })
 }
 
+const disconnectCurrentTime = () => {
+  currentTimeObserver?.disconnect()
+  const el = document.querySelector(`.${ClassName.currentTime}`)
+  el?.remove()
+}
+
+const observeCurrentTime = () => {
+  const timeDisplay = document.querySelector(
+    '.html5-video-player .ytp-chrome-bottom > .ytp-chrome-controls > .ytp-left-controls > .ytp-time-display',
+  )
+  const currentTime = timeDisplay?.querySelector('.ytp-time-current')
+  if (!timeDisplay || !currentTime) {
+    return
+  }
+
+  currentTimeObserver = new MutationObserver((mutations) => {
+    for (const _mutation of mutations) {
+      if (!startTime) {
+        return
+      }
+      const duration = parseTime(currentTime.textContent ?? '')
+      if (!duration) {
+        return
+      }
+      const time = add(startTime, duration)
+      let el = document.querySelector(`.${ClassName.currentTime}`)
+      if (!el) {
+        el = document.createElement('span')
+        el.classList.add(ClassName.currentTime)
+        timeDisplay.parentElement?.insertBefore(el, timeDisplay.nextSibling)
+      }
+      el.textContent = `(${format(time, 'pp')})`
+    }
+  })
+  currentTimeObserver.observe(currentTime, { childList: true })
+}
+
+const removeStartTime = () => {
+  const label = document.querySelector(`.${ClassName.startTime}`)
+  label?.remove()
+}
+
+const appendStartTime = () => {
+  const wrapper = document.querySelector(
+    '#bottom-row > #description > #description-inner > #ytd-watch-info-text > #info-container > #info',
+  )
+  if (!wrapper) {
+    return
+  }
+
+  if (!startTime) {
+    return
+  }
+
+  let label = document.querySelector(`.${ClassName.startTime}`)
+  if (!label) {
+    label = document.createElement('span')
+    label.classList.add(ClassName.startTime, 'yt-formatted-string', 'bold')
+    wrapper.append(label)
+  }
+  label.textContent = ` (${format(startTime, 'PPp')}) `
+}
+
 const init = async () => {
   if (!isVideoUrl()) {
     return
   }
 
   await s.acquire(async () => {
-    await removeStartTime()
     disconnectSeeking()
     disconnectCurrentTime()
+    removeStartTime()
 
-    await fetchTimes()
+    await loadTimes()
 
     if (!startTime) {
       return
     }
 
+    observeSeeking()
+    observeCurrentTime()
+    appendStartTime()
+
     await chrome.runtime.sendMessage({
       type: 'set-start-time',
       data: formatISO(startTime),
     })
-
-    await appendStartTime()
-    observeSeeking()
-    if (endTime) {
-      observeCurrentTime()
-    }
   })
 }
 
