@@ -45,7 +45,7 @@ const init = async () => {
   }
   startTime = parseISO(data)
 
-  let messageObserver: MutationObserver | undefined = undefined
+  let messageObserver: MutationObserver | undefined
 
   const observeMessages = async () => {
     messageObserver?.disconnect()
