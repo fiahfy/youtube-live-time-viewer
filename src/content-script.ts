@@ -46,8 +46,8 @@ const observeSeeking = () => {
     return
   }
 
-  const sourceTooltip = wrapper.querySelector('.ytp-tooltip-text')
-  if (!sourceTooltip) {
+  const tooltip = wrapper.querySelector('.ytp-tooltip-text')
+  if (!tooltip) {
     return
   }
 
@@ -68,19 +68,19 @@ const observeSeeking = () => {
         if (!el) {
           el = document.createElement('span')
           el.classList.add(ClassName.tooltip)
-          el.classList.add(...sourceTooltip.classList)
+          el.classList.add(...tooltip.classList)
           wrapper.append(el)
         }
         el.textContent = `(${format(time, 'pp')})`
       }
       const [removedNode] = mutation.removedNodes
       if (removedNode) {
-        const tooltip = document.querySelector(`.${ClassName.tooltip}`)
-        tooltip?.remove()
+        const el = document.querySelector(`.${ClassName.tooltip}`)
+        el?.remove()
       }
     }
   })
-  seekingObserver.observe(sourceTooltip, { childList: true })
+  seekingObserver.observe(tooltip, { childList: true })
 }
 
 const disconnectCurrentTime = () => {
@@ -93,17 +93,19 @@ const observeCurrentTime = () => {
   const timeDisplay = document.querySelector(
     '.html5-video-player .ytp-chrome-bottom > .ytp-chrome-controls > .ytp-left-controls > .ytp-time-display',
   )
-  const currentTime = timeDisplay?.querySelector('.ytp-time-current')
-  if (!timeDisplay || !currentTime) {
+  const timeCurrent = timeDisplay?.querySelector('.ytp-time-current')
+  if (!timeDisplay || !timeCurrent) {
     return
   }
+
+  const timeDuration = timeDisplay?.querySelector('.ytp-time-duration')
 
   currentTimeObserver = new MutationObserver((mutations) => {
     for (const _mutation of mutations) {
       if (!startTime) {
         return
       }
-      const duration = parseTime(currentTime.textContent ?? '')
+      const duration = parseTime(timeCurrent.textContent ?? '')
       if (!duration) {
         return
       }
@@ -114,15 +116,19 @@ const observeCurrentTime = () => {
         el.classList.add(ClassName.currentTime)
         timeDisplay.parentElement?.insertBefore(el, timeDisplay.nextSibling)
       }
-      el.textContent = `(${format(time, 'pp')})`
+      let text = `(${format(time, 'pp')})`
+      if (!endTime) {
+        text = ` • ${timeCurrent.textContent} / ${timeDuration?.textContent ?? '--'} ${text}`
+      }
+      el.textContent = text
     }
   })
-  currentTimeObserver.observe(currentTime, { childList: true })
+  currentTimeObserver.observe(timeCurrent, { childList: true })
 }
 
 const removeStartTime = () => {
-  const label = document.querySelector(`.${ClassName.startTime}`)
-  label?.remove()
+  const el = document.querySelector(`.${ClassName.startTime}`)
+  el?.remove()
 }
 
 const appendStartTime = () => {
@@ -137,13 +143,13 @@ const appendStartTime = () => {
     return
   }
 
-  let label = document.querySelector(`.${ClassName.startTime}`)
-  if (!label) {
-    label = document.createElement('span')
-    label.classList.add(ClassName.startTime, 'yt-formatted-string', 'bold')
-    wrapper.append(label)
+  let el = document.querySelector(`.${ClassName.startTime}`)
+  if (!el) {
+    el = document.createElement('span')
+    el.classList.add(ClassName.startTime, 'yt-formatted-string', 'bold')
+    wrapper.append(el)
   }
-  label.textContent = ` (${format(startTime, 'PPp')}) `
+  el.textContent = ` (${format(startTime, 'PPp')}) `
 }
 
 const init = async () => {
