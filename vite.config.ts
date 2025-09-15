@@ -29,6 +29,12 @@ const manifest = defineManifest({
       js: ['src/content-script-frame.ts'],
     },
   ],
+  action: {
+    default_icon: {
+      128: 'icon.png',
+    },
+    default_popup: 'src/popup.html',
+  },
   permissions: ['storage'],
   host_permissions: ['https://www.youtube.com/*'],
 })

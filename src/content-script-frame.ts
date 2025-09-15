@@ -1,15 +1,22 @@
 import { add, format, parseISO } from 'date-fns'
-import { parseTime, querySelectorAsync } from './utils'
-import './content-script-frame.css'
+import { parseTime, querySelectorAsync } from '~/utils'
+import '~/content-script-frame.css'
+import type { Settings } from '~/models'
 
+const ClassName = {
+  timestamp: 'yltv-timestamp',
+}
+
+let settings: Settings
 let startTime: Date | undefined
+let observer: MutationObserver | undefined
 
 const updateItem = (node: HTMLElement) => {
   if (!startTime) {
     return
   }
 
-  const timestamp = node.querySelector('#content > #timestamp')
+  const timestamp = node.querySelector<HTMLElement>('#content > #timestamp')
   if (!timestamp) {
     return
   }
@@ -20,7 +27,22 @@ const updateItem = (node: HTMLElement) => {
   }
 
   const time = add(startTime, duration)
-  timestamp.textContent = format(time, 'p')
+
+  const oldEl = node.querySelector(`.${ClassName.timestamp}`)
+  oldEl?.remove()
+
+  timestamp.style.display = 'none'
+
+  const el = timestamp.cloneNode(false) as HTMLElement
+  el.classList.add(ClassName.timestamp)
+  el.textContent = format(
+    time,
+    settings.timeFormat === '12h' ? 'h:mm a' : 'H:mm',
+  )
+  // Cancel cloned style
+  el.style.display = 'inline'
+
+  timestamp.parentElement?.insertBefore(el, timestamp.nextSibling)
 }
 
 const updateItems = () => {
@@ -78,11 +100,25 @@ const init = async () => {
   updateItems()
   await observeMessages()
 
-  const observer = new MutationObserver(async () => {
+  observer?.disconnect()
+  observer = new MutationObserver(async () => {
     updateItems()
     await observeMessages()
   })
   observer.observe(el, { childList: true })
 }
 
-init()
+chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+  const { type, data } = message
+  switch (type) {
+    case 'settings-changed':
+      settings = data.settings
+      init().then(() => sendResponse())
+      return true
+  }
+})
+
+chrome.runtime.sendMessage({ type: 'content-loaded' }).then(async (data) => {
+  settings = data.settings
+  await init()
+})

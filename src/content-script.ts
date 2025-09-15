@@ -1,7 +1,8 @@
 import { semaphore } from '@fiahfy/semaphore'
 import { add, format, formatISO, parseISO } from 'date-fns'
-import { parseTime } from './utils'
-import './content-script.css'
+import { parseTime } from '~/utils'
+import '~/content-script.css'
+import type { Settings } from '~/models'
 
 const ClassName = {
   currentTime: 'yltv-current-time',
@@ -9,6 +10,7 @@ const ClassName = {
   tooltip: 'yltv-tooltip',
 }
 
+let settings: Settings
 const s = semaphore()
 const isVideoUrl = () => new URL(location.href).pathname === '/watch'
 let seekingObserver: MutationObserver | undefined
@@ -71,7 +73,7 @@ const observeSeeking = () => {
           el.classList.add(...tooltip.classList)
           wrapper.append(el)
         }
-        el.textContent = `(${format(time, 'pp')})`
+        el.textContent = `(${format(time, settings.timeFormat === '12h' ? 'h:mm:ss a' : 'H:mm:ss')})`
       }
       const [removedNode] = mutation.removedNodes
       if (removedNode) {
@@ -116,7 +118,7 @@ const observeCurrentTime = () => {
         el.classList.add(ClassName.currentTime)
         timeDisplay.parentElement?.insertBefore(el, timeDisplay.nextSibling)
       }
-      let text = `(${format(time, 'pp')})`
+      let text = `(${format(time, settings.timeFormat === '12h' ? 'h:mm:ss a' : 'H:mm:ss')})`
       if (!endTime) {
         text = ` • ${timeCurrent.textContent} / ${timeDuration?.textContent ?? '--'} ${text}`
       }
@@ -133,7 +135,7 @@ const removeStartTime = () => {
 
 const appendStartTime = () => {
   const wrapper = document.querySelector(
-    '#bottom-row > #description > #description-inner > #ytd-watch-info-text > #info-container > #info',
+    '#bottom-row > #description > #description-inner > #ytd-watch-info-text > #info-container',
   )
   if (!wrapper) {
     return
@@ -149,7 +151,7 @@ const appendStartTime = () => {
     el.classList.add(ClassName.startTime, 'yt-formatted-string', 'bold')
     wrapper.append(el)
   }
-  el.textContent = ` (${format(startTime, 'PPp')}) `
+  el.textContent = `(${format(startTime, settings.timeFormat === '12h' ? 'PP h:mm:ss a' : 'PP H:mm:ss')}) `
 }
 
 const init = async () => {
@@ -180,12 +182,19 @@ const init = async () => {
 }
 
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-  const { type } = message
+  const { type, data } = message
   switch (type) {
     case 'url-changed':
+      init().then(() => sendResponse())
+      return true
+    case 'settings-changed':
+      settings = data.settings
       init().then(() => sendResponse())
       return true
   }
 })
 
-init()
+chrome.runtime.sendMessage({ type: 'content-loaded' }).then(async (data) => {
+  settings = data.settings
+  await init()
+})

@@ -2,6 +2,10 @@
   font-size: 109%;
 }
 
+.yltv-start-time {
+  margin-left: 8px;
+}
+
 .ytp-tooltip
   > .ytp-tooltip-text-wrapper
   > .ytp-tooltip-bottom-text
