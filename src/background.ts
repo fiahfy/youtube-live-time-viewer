@@ -40,8 +40,9 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo) => {
   }
 })
 
-chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   const { type, data } = message
+  const { tab } = sender
   switch (type) {
     case 'content-loaded':
       contentLoaded().then((data) => sendResponse(data))
@@ -49,13 +50,15 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     case 'settings-changed':
       settingsChanged(data.settings).then(() => sendResponse())
       return true
-    case 'set-start-time':
-      chrome.storage.local.set({ data }).then(() => sendResponse())
-      return true
-    case 'get-start-time':
-      chrome.storage.local
-        .get(['data'])
-        .then((result) => sendResponse(result.data))
-      return true
+    case 'start-time-requested':
+      if (tab?.id) {
+        chrome.tabs
+          .sendMessage(tab.id, {
+            type: 'start-time-requested',
+          })
+          .then((result) => sendResponse(result))
+        return true
+      }
+      return
   }
 })

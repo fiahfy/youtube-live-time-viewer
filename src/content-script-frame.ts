@@ -59,13 +59,13 @@ const updateItems = () => {
 }
 
 const init = async () => {
-  const data = await chrome.runtime.sendMessage({
-    type: 'get-start-time',
+  const startTimeStr = await chrome.runtime.sendMessage({
+    type: 'start-time-requested',
   })
-  if (!data) {
+  if (!startTimeStr) {
     return
   }
-  startTime = parseISO(data)
+  startTime = parseISO(startTimeStr)
 
   let messageObserver: MutationObserver | undefined
 

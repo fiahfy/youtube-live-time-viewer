@@ -100,8 +100,6 @@ const observeCurrentTime = () => {
     return
   }
 
-  const timeDuration = timeDisplay?.querySelector('.ytp-time-duration')
-
   currentTimeObserver = new MutationObserver((mutations) => {
     for (const _mutation of mutations) {
       if (!startTime) {
@@ -120,7 +118,7 @@ const observeCurrentTime = () => {
       }
       let text = `(${format(time, settings.timeFormat === '12h' ? 'h:mm:ss a' : 'H:mm:ss')})`
       if (!endTime) {
-        text = ` • ${timeCurrent.textContent} / ${timeDuration?.textContent ?? '--'} ${text}`
+        text = ` • ${timeCurrent.textContent} ${text}`
       }
       el.textContent = text
     }
@@ -154,7 +152,7 @@ const appendStartTime = () => {
   el.textContent = `(${format(startTime, settings.timeFormat === '12h' ? 'PP h:mm:ss a' : 'PP H:mm:ss')}) `
 }
 
-const init = async () => {
+const init = async (shouldLoad: boolean) => {
   if (!isVideoUrl()) {
     return
   }
@@ -164,7 +162,9 @@ const init = async () => {
     disconnectCurrentTime()
     removeStartTime()
 
-    await loadTimes()
+    if (shouldLoad) {
+      await loadTimes()
+    }
 
     if (!startTime) {
       return
@@ -173,11 +173,6 @@ const init = async () => {
     observeSeeking()
     observeCurrentTime()
     appendStartTime()
-
-    await chrome.runtime.sendMessage({
-      type: 'set-start-time',
-      data: formatISO(startTime),
-    })
   })
 }
 
@@ -185,16 +180,27 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   const { type, data } = message
   switch (type) {
     case 'url-changed':
-      init().then(() => sendResponse())
+      init(true).then(() => sendResponse())
       return true
     case 'settings-changed':
       settings = data.settings
-      init().then(() => sendResponse())
+      init(false).then(() => sendResponse())
+      return true
+    case 'start-time-requested':
+      new Promise((resolve) => {
+        const expireTime = Date.now() + 10000
+        const timer = setInterval(() => {
+          if (startTime || Date.now() > expireTime) {
+            clearInterval(timer)
+            resolve(startTime ? formatISO(startTime) : undefined)
+          }
+        }, 100)
+      }).then((data) => sendResponse(data))
       return true
   }
 })
 
 chrome.runtime.sendMessage({ type: 'content-loaded' }).then(async (data) => {
   settings = data.settings
-  await init()
+  await init(true)
 })
