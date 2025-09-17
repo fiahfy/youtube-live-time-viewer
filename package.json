@@ -1,7 +1,7 @@
 {
   "name": "youtube-live-time-viewer",
   "description": "Chrome Extension for Viewing Time on YouTube Live.",
-  "version": "0.0.10",
+  "version": "0.0.11",
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
