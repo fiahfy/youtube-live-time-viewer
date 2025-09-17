@@ -4,6 +4,7 @@
 
 .yltv-start-time {
   margin-left: 8px;
+  white-space: nowrap;
 }
 
 .ytp-tooltip

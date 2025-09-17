@@ -133,7 +133,7 @@ const removeStartTime = () => {
 
 const appendStartTime = () => {
   const wrapper = document.querySelector(
-    '#bottom-row > #description > #description-inner > #ytd-watch-info-text > #info-container',
+    '#bottom-row > #description > #description-inner > #ytd-watch-info-text > #info-container > #info',
   )
   if (!wrapper) {
     return
