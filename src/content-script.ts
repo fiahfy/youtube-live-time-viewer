@@ -1,8 +1,8 @@
 import { semaphore } from '@fiahfy/semaphore'
 import { add, format, formatISO, parseISO } from 'date-fns'
+import type { Settings } from '~/models'
 import { parseTime } from '~/utils'
 import '~/content-script.css'
-import type { Settings } from '~/models'
 
 const ClassName = {
   currentTime: 'yltv-current-time',
