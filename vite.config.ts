@@ -25,8 +25,8 @@ const manifest = defineManifest({
     },
     {
       matches: ['https://www.youtube.com/live_chat_replay*'],
-      all_frames: true,
       js: ['src/content-script-frame.ts'],
+      all_frames: true,
     },
   ],
   action: {
