@@ -1,7 +1,7 @@
 import { semaphore } from '@fiahfy/semaphore'
-import { add, format, formatISO, parseISO } from 'date-fns'
+import { add, type Duration, format, formatISO, parseISO, sub } from 'date-fns'
 import type { Settings } from '~/models'
-import { parseTime } from '~/utils'
+import { addDuration, parseTime } from '~/utils'
 import '~/content-script.css'
 
 const ClassName = {
@@ -92,29 +92,39 @@ const disconnectCurrentTime = () => {
 }
 
 const observeCurrentTime = () => {
-  const timeDisplay = document.querySelector(
-    '.html5-video-player .ytp-chrome-bottom > .ytp-chrome-controls > .ytp-left-controls > .ytp-time-display',
+  const timeContents = document.querySelector(
+    '.html5-video-player .ytp-chrome-bottom > .ytp-chrome-controls > .ytp-left-controls > .ytp-time-display > .ytp-time-wrapper > .ytp-time-contents',
   )
-  const timeCurrent = timeDisplay?.querySelector('.ytp-time-current')
-  if (!timeDisplay || !timeCurrent) {
+  const timeCurrent = timeContents?.querySelector('.ytp-time-current')
+  if (!timeContents || !timeCurrent) {
     return
   }
+  const timeDuration = timeContents?.querySelector('.ytp-time-duration')
+  const totalDuration = parseTime(timeDuration?.textContent ?? '')
 
   currentTimeObserver = new MutationObserver((mutations) => {
     for (const _mutation of mutations) {
       if (!startTime) {
         return
       }
-      const duration = parseTime(timeCurrent.textContent ?? '')
+      let duration: Duration | undefined = parseTime(timeCurrent.textContent)
       if (!duration) {
         return
       }
+      if (
+        duration &&
+        timeCurrent.textContent.charAt(0) === '-' &&
+        totalDuration
+      ) {
+        duration = addDuration(duration, totalDuration)
+      }
+
       const time = add(startTime, duration)
-      let el = document.querySelector(`.${ClassName.currentTime}`)
+      let el = timeContents.querySelector(`.${ClassName.currentTime}`)
       if (!el) {
         el = document.createElement('span')
         el.classList.add(ClassName.currentTime)
-        timeDisplay.parentElement?.insertBefore(el, timeDisplay.nextSibling)
+        timeContents.append(el)
       }
       let text = `(${format(time, settings.timeFormat === '12h' ? 'h:mm:ss a' : 'H:mm:ss')})`
       if (!endTime) {

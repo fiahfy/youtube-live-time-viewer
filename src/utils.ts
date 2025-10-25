@@ -1,3 +1,5 @@
+import { add, type Duration, intervalToDuration } from 'date-fns'
+
 export const querySelectorAsync = (
   selector: string,
   interval = 100,
@@ -32,4 +34,10 @@ export const parseTime = (str: string) => {
     return { hours: 0, minutes: units[0], seconds: units[1] }
   }
   return undefined
+}
+
+export const addDuration = (a: Duration, b: Duration) => {
+  const start = new Date()
+  const end = add(add(start, a), b)
+  return intervalToDuration({ start, end })
 }
