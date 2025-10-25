@@ -8,9 +8,6 @@
   white-space: nowrap;
 }
 
-.ytp-tooltip
-  > .ytp-tooltip-text-wrapper
-  > .ytp-tooltip-bottom-text
-  > .yltv-tooltip.ytp-tooltip-text {
+.yltv-tooltip {
   margin-left: 5px;
 }

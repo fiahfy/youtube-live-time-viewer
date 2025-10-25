@@ -42,13 +42,15 @@ const disconnectSeeking = () => {
 
 const observeSeeking = () => {
   const wrapper = document.querySelector(
-    '.html5-video-player > div > .ytp-tooltip-text-wrapper > .ytp-tooltip-bottom-text',
+    '.html5-video-player > div > .ytp-tooltip-text-wrapper > .ytp-tooltip-progress-bar-pill',
   )
   if (!wrapper) {
     return
   }
 
-  const tooltip = wrapper.querySelector('.ytp-tooltip-text')
+  const tooltip = wrapper.querySelector(
+    '.ytp-tooltip-progress-bar-pill-time-stamp',
+  )
   if (!tooltip) {
     return
   }
@@ -70,7 +72,6 @@ const observeSeeking = () => {
         if (!el) {
           el = document.createElement('span')
           el.classList.add(ClassName.tooltip)
-          el.classList.add(...tooltip.classList)
           wrapper.append(el)
         }
         el.textContent = `(${format(time, settings.timeFormat === '12h' ? 'h:mm:ss a' : 'H:mm:ss')})`
