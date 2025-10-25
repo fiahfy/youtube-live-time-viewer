@@ -92,8 +92,14 @@ const disconnectCurrentTime = () => {
 }
 
 const observeCurrentTime = () => {
-  const timeContents = document.querySelector(
-    '.html5-video-player .ytp-chrome-bottom > .ytp-chrome-controls > .ytp-left-controls > .ytp-time-display > .ytp-time-wrapper > .ytp-time-contents',
+  const timeDisplay = document.querySelector<HTMLElement>(
+    '.html5-video-player .ytp-chrome-bottom > .ytp-chrome-controls > .ytp-left-controls > .ytp-time-display',
+  )
+  if (!timeDisplay) {
+    return
+  }
+  const timeContents = timeDisplay.querySelector(
+    '.ytp-time-wrapper > .ytp-time-contents',
   )
   const timeCurrent = timeContents?.querySelector('.ytp-time-current')
   if (!timeContents || !timeCurrent) {
@@ -101,6 +107,16 @@ const observeCurrentTime = () => {
   }
   const timeDuration = timeContents?.querySelector('.ytp-time-duration')
   const totalDuration = parseTime(timeDuration?.textContent ?? '')
+
+  timeDisplay.onclick = () => {
+    if (endTime) {
+      return
+    }
+    const badge = timeContents.querySelector<HTMLElement>('.ytp-live-badge')
+    if (badge) {
+      badge.click()
+    }
+  }
 
   currentTimeObserver = new MutationObserver((mutations) => {
     for (const _mutation of mutations) {
