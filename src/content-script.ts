@@ -1,5 +1,5 @@
 import { semaphore } from '@fiahfy/semaphore'
-import { add, type Duration, format, formatISO, parseISO, sub } from 'date-fns'
+import { add, type Duration, format, formatISO, parseISO } from 'date-fns'
 import type { Settings } from '~/models'
 import { addDuration, parseTime } from '~/utils'
 import '~/content-script.css'
