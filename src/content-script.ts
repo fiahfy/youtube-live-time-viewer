@@ -11,12 +11,14 @@ const ClassName = {
 }
 
 let settings: Settings
-const s = semaphore()
-const isVideoUrl = () => new URL(location.href).pathname === '/watch'
 let seekingObserver: MutationObserver | undefined
 let currentTimeObserver: MutationObserver | undefined
 let startTime: Date | undefined
 let endTime: Date | undefined
+
+const s = semaphore()
+
+const isVideoUrl = () => new URL(location.href).pathname === '/watch'
 
 const loadTimes = async () => {
   const res = await fetch(location.href)
@@ -145,7 +147,7 @@ const observeCurrentTime = () => {
       }
       let text = `(${format(time, settings.timeFormat === '12h' ? 'h:mm:ss a' : 'H:mm:ss')})`
       if (!endTime) {
-        text = ` • ${timeCurrent.textContent} ${text}`
+        text = `${timeCurrent.textContent} ${text}`
       }
       el.textContent = text
     }

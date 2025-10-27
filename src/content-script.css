@@ -1,6 +1,6 @@
 .yltv-current-time {
+  font-weight: 400;
   margin-left: 8px;
-  font-size: 109%;
 }
 
 .yltv-start-time {
@@ -9,5 +9,6 @@
 }
 
 .yltv-tooltip {
-  margin-left: 5px;
+  font-weight: 400;
+  margin-left: 4px;
 }
