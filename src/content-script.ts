@@ -70,7 +70,7 @@ const observeSeeking = () => {
         }
         const target = endTime ? startTime : new Date()
         const time = add(target, duration)
-        let el = document.querySelector(`.${ClassName.tooltip}`)
+        let el = wrapper.querySelector(`.${ClassName.tooltip}`)
         if (!el) {
           el = document.createElement('span')
           el.classList.add(ClassName.tooltip)
