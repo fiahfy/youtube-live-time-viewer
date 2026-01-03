@@ -95,27 +95,25 @@ const disconnectCurrentTime = () => {
 }
 
 const observeCurrentTime = () => {
-  const timeDisplay = document.querySelector<HTMLElement>(
-    '.html5-video-player .ytp-chrome-bottom > .ytp-chrome-controls > .ytp-left-controls > .ytp-time-display',
+  const wrapper = document.querySelector<HTMLElement>(
+    '.html5-video-player .ytp-chrome-bottom > .ytp-chrome-controls > .ytp-left-controls > .ytp-time-display > .ytp-time-wrapper',
   )
-  if (!timeDisplay) {
+  if (!wrapper) {
     return
   }
-  const timeContents = timeDisplay.querySelector(
-    '.ytp-time-wrapper > .ytp-time-contents',
-  )
-  const timeCurrent = timeContents?.querySelector('.ytp-time-current')
-  if (!timeContents || !timeCurrent) {
+  const contentsElement = wrapper.querySelector('.ytp-time-contents')
+  const currentElement = contentsElement?.querySelector('.ytp-time-current')
+  if (!contentsElement || !currentElement) {
     return
   }
-  const timeDuration = timeContents?.querySelector('.ytp-time-duration')
-  const totalDuration = parseTime(timeDuration?.textContent ?? '')
+  const durationElement = contentsElement?.querySelector('.ytp-time-duration')
+  const totalDuration = parseTime(durationElement?.textContent ?? '')
 
-  timeDisplay.onclick = () => {
+  wrapper.onclick = () => {
     if (endTime) {
       return
     }
-    const badge = timeContents.querySelector<HTMLElement>('.ytp-live-badge')
+    const badge = wrapper.querySelector<HTMLElement>('.ytp-live-badge')
     if (badge) {
       badge.click()
     }
@@ -126,33 +124,33 @@ const observeCurrentTime = () => {
       if (!startTime) {
         return
       }
-      let duration: Duration | undefined = parseTime(timeCurrent.textContent)
+      let duration: Duration | undefined = parseTime(currentElement.textContent)
       if (!duration) {
         return
       }
       if (
         duration &&
-        timeCurrent.textContent.charAt(0) === '-' &&
+        currentElement.textContent.charAt(0) === '-' &&
         totalDuration
       ) {
         duration = addDuration(duration, totalDuration)
       }
 
       const time = add(startTime, duration)
-      let el = timeContents.querySelector(`.${ClassName.currentTime}`)
+      let el = wrapper.querySelector(`.${ClassName.currentTime}`)
       if (!el) {
-        el = document.createElement('span')
+        el = document.createElement('div')
         el.classList.add(ClassName.currentTime)
-        timeContents.append(el)
+        wrapper.append(el)
       }
       let text = `(${format(time, settings.timeFormat === '12h' ? 'h:mm:ss a' : 'H:mm:ss')})`
       if (!endTime) {
-        text = `${timeCurrent.textContent} ${text}`
+        text = `${currentElement.textContent} ${text}`
       }
       el.textContent = text
     }
   })
-  currentTimeObserver.observe(timeCurrent, { childList: true })
+  currentTimeObserver.observe(currentElement, { childList: true })
 }
 
 const removeStartTime = () => {

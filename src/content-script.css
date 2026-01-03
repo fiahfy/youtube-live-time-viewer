@@ -12,3 +12,8 @@
   font-weight: 400;
   margin-left: 4px;
 }
+
+.ytp-time-display > .ytp-time-wrapper {
+  /* biome-ignore lint/complexity/noImportantStyles: false positive */
+  display: flex !important;
+}
