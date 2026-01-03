@@ -2,7 +2,7 @@
 
 [![Create Release](https://github.com/fiahfy/youtube-live-time-viewer/actions/workflows/create-release.yml/badge.svg)](https://github.com/fiahfy/youtube-live-time-viewer/actions/workflows/create-release.yml)
 
-> Chrome Extension for Viewing Time on YouTube Live.
+> Chrome extension that shows the current time on YouTube Live.
 
 ## Features
 
