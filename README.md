@@ -6,8 +6,9 @@
 
 ## Features
 
-- Display video publishing time.
-- Display time on seek bar and chat.
+- Display the original broadcast start time of YouTube live streams.
+- Display real-world timestamps during playback and seeking.
+- Display the corresponding real-world time for chat messages.
 
 ## Screenshots
 
