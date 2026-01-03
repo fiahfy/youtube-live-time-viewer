@@ -1,7 +1,7 @@
 {
   "name": "youtube-live-time-viewer",
   "description": "Chrome extension that shows the current time on YouTube Live.",
-  "version": "0.0.14",
+  "version": "0.0.15",
   "dependencies": {
     "@emotion/react": "11.14.0",
     "@emotion/styled": "11.14.1",
