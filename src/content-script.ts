@@ -18,7 +18,12 @@ let endTime: Date | undefined
 
 const s = semaphore()
 
-const isVideoUrl = () => new URL(location.href).pathname === '/watch'
+const isVideoUrl = () => {
+  const pathname = new URL(location.href).pathname
+  return ['^/watch', '^/live/.*', '^/@.*/live'].some((p) =>
+    new RegExp(p).test(pathname),
+  )
+}
 
 const loadTimes = async () => {
   const res = await fetch(location.href)
